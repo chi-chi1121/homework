@@ -15,7 +15,7 @@ private:
     int convertToInt();
 };
 int main() {/*test func*/
-    zipcode code1(99504);
+    zipcode code1(98504);
     cout << "1" + code1.getZipCodeString() + "1" << endl;
     zipcode code2(92627);
     cout << "1" + code2.getZipCodeString() + "1" << endl;
@@ -44,69 +44,56 @@ zipcode::zipcode(int input) {/*constructor*/
 }
 
 void zipcode::convertToString(int input) {/*let input convert to string*/
-    int brokenZipCode[5] = { 0 };
-    int remainder = 0;
-    char stringOfLines[25];
-    int index = 0;
+    int digits[5] = { 0 }, digit, reminder, c = 0;
+    char array[25];
     bool flag = false;
-
-    for (int i = 0; i < 5; i++)
-    {
-        remainder = input % static_cast<int>(pow(10, (5- 1) - i));
-        brokenZipCode[i] = input / (pow(10, (5 - 1) - i));
-        input = remainder;
+    reminder = input;
+    for (int i = 0; i < 5; i++) {
+        digit = reminder / pow(10, 4 - i);
+        digits[i] = digit;
+        reminder = reminder % int(pow(10, 4 - i));
     }
-
-    int carryOn = 0;
-
-    while (index < 5)
+    while (c<5)
     {
-        for (int i = 0; i < 5; i++)
-        {
-            for (int j = i + 1; j < 5; j++)
-            {
-                if ((value[i] + value[j] == brokenZipCode[index]) || ((value[i] + value[j] == 11) && brokenZipCode[index] == 0))
-                {
-                    stringOfLines[i + carryOn] = '1';
-                    stringOfLines[j + carryOn] = '1';
-                    flag = true;
-                    break;
-                }
-            }
-            if (flag == true)break;
+        for (int i = 0; i < 5; i++) {
+              for (int j = i + 1; j < 5; j++) {
+                  if ((value[i] + value[j] == digits[c]) || ((value[i] + value[j] == 11) && digits[c] == 0)) {
+                      array[i + 5 * c] = '1';
+                      array[j + 5 * c] = '1';
+                      break;
+                  }
+              }       
+          }   
+        for (int k = 0; k < 5; k++) {
+              if (array[k + c * 5] != '1') {
+                   array[k + c * 5] = '0';
+              }
         }
-        flag = false;
-
-        for (int i = 0; i <5; i++)
-        {
-            if (stringOfLines[i + carryOn] != '1')stringOfLines[i + carryOn] = '0';
-        }
-        index += 1;
-        carryOn += 5;
+     c++;
     }
-
-    for (int i = 0; i < 25; i++)
-    {
-        code += stringOfLines[i];
+    for (int i = 0; i < 25; i++) {
+        code += array[i];
     }
 }
 
 int zipcode::convertToInt() {/*let input convert to int*/
-    int decode = 0, toAdd = 0,k=0;
-    for (int i = 0; i < 25; i += 5)
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            if (code[i + j] == '1') {
-                toAdd += value[j];
-            }
-            if (toAdd == 11)toAdd = 0;
+    int number=0, digit=0;
+    for (int i = 0; i < 5; i++) {
+        digit = 0;
+        for (int j = 0 + i * 5; j < (i + 1) * 5; j++) {
+            digit+=value[j - (i * 5)] * (code[j]-'0');
+            cout << " " << digit;
         }
-        decode += toAdd * pow(10, (5 - 1) - k);
-        toAdd = 0;
-        k++;
+        if (digit != 11) {
+        number *= 10;
+        number += digit;
+        }
+        else if (digit == 11) {
+            number *= 10;
+        }
+        
     }
-    return decode;
+    return number;
 }
 
 string zipcode::getZipCodeString() {/*accessor*/
